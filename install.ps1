@@ -1,17 +1,14 @@
 # market 安装脚本(Windows x64)。装到 %LOCALAPPDATA%\market 并加入用户 PATH。
+# 用 releases/latest/download 直链,不走 GitHub API(免匿名限流)。
 $ErrorActionPreference = "Stop"
 
 $repo = "98DE9E1F/rise-market"
 $dir = Join-Path $env:LOCALAPPDATA "market"
 $exe = Join-Path $dir "market.exe"
 
-$rel = Invoke-RestMethod "https://api.github.com/repos/$repo/releases/latest"
-$asset = $rel.assets | Where-Object name -eq "market-windows-x64.exe"
-if (-not $asset) { throw "找不到最新版的 market-windows-x64.exe" }
-
 New-Item -ItemType Directory -Force -Path $dir | Out-Null
-Write-Host "下载 $($asset.browser_download_url)"
-Invoke-WebRequest $asset.browser_download_url -OutFile $exe
+Write-Host "下载 market(latest)…"
+Invoke-WebRequest "https://github.com/$repo/releases/latest/download/market-windows-x64.exe" -OutFile $exe
 
 $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
 if ($userPath -notlike "*$dir*") {
